@@ -1,9 +1,11 @@
 #include <Windows.h>
+#include "Debug.h"
 #include <strsafe.h>
+
 #define BEA_ENGINE_STATIC
 #define BEA_USE_STDCALL
 #include "BeaEngine.h"
-#pragma comment(lib,"Beaengine.lib")
+#pragma comment(lib,"BeaEngine.lib")
 #pragma comment(linker,"/NODEFAULTLIB:\"crt.lib\"")
 
 
@@ -34,7 +36,7 @@ UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComme
 	{
 		return unLen;
 	}
-	
+
 	//4.将机器码转码成字符串
 	LPWSTR lpOPCode = pOPCode;
 	PBYTE  lpBuffer = (PBYTE)lpRemote_Buf;
@@ -44,7 +46,7 @@ UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComme
 		StringCbPrintf(lpOPCode++, 50, L"%X", *lpBuffer&0x0F);
 		lpBuffer++;
 	}
-	
+
 	//5. 保存反汇编出的指令
 	WCHAR szASM[50] = {0};
 	MultiByteToWideChar(CP_ACP,0,objDiasm.CompleteInstr,-1,szASM,_countof(szASM));
@@ -52,4 +54,23 @@ UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComme
 
 	return unLen;
 
+}
+
+bool DisplayAntiASM(LPVOID lpIntAddress)
+{
+
+
+	wchar_t szOPCode[64]	= {0};
+	wchar_t szASM[64]		= {0};
+	wchar_t szComment[64]	= {0};
+	DWORD	dwTempAddr		= (DWORD)lpIntAddress;//起始反汇编地址
+	DWORD   dwOPCodeLen		= 0;
+
+	for (;dwOPCodeLen!=-1;)
+	{
+		dwOPCodeLen = DBG_Disasm((LPVOID)dwTempAddr,szOPCode,szASM,szComment);
+		dwTempAddr+=dwOPCodeLen;
+		OutputDebug(L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,szOPCode,szASM,szComment);
+	}
+	return true;
 }
