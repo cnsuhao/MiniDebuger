@@ -1,8 +1,11 @@
+
 #include <Windows.h>
 #include "Debug.h"
 #include "AntiAsm.h"
 #include "DealEvent.h"
 #include <vector>
+#include "..//Interface.h"
+#include <afx.h>
 
 using std::vector;
 
@@ -405,5 +408,94 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 		break;
 	}
 	return DBG_EXCEPTION_NOT_HANDLED;////DBG_CONTINUE//异常已经处理
+
+}
+
+
+//调试字符串输出处理程序
+bool ;Deal_ODSE()
+{
+	LPVOID lpDebugString = NULL;
+	DWORD dwSizeofDebugString=0;
+	DWORD dwRet =0;
+
+
+	lpDebugString = DbgEvt.u.DebugString.lpDebugStringData;
+	dwSizeofDebugString = DbgEvt.u.DebugString.nDebugStringLength;
+	
+	BYTE byDebugStringBuffer[MAX_PATH];
+	char cDebugStringBuffer[MAX_PATH+1]={0};
+	
+
+
+
+	if (dwSizeofDebugString<=MAX_PATH)
+	{
+		if(0==ReadProcessMemory(g_hProc,lpDebugString,&byDebugStringBuffer,MAX_PATH,&dwRet))
+		{
+			return false;
+		}
+		else
+		{
+			strcpy_s(cDebugStringBuffer,(char*)byDebugStringBuffer);
+
+			DWORD dwNum = MultiByteToWideChar (CP_ACP, 0, cDebugStringBuffer, -1, NULL, 0);
+			wchar_t *pwText=new wchar_t[dwNum];
+			if(!pwText)
+			{
+				delete []pwText;
+			}
+			else
+			{
+				MultiByteToWideChar (CP_ACP, 0, cDebugStringBuffer, -1, pwText, dwNum);
+
+				CString csStr;
+				for(unsigned int i=0; i<wcslen(pwText); i++)  
+				{
+					csStr.AppendChar(pwText[i]);  
+				}
+
+				Printf2UI(csStr,MINIF_DEBUG_STRING);//调用接口
+
+				delete []pwText;
+			}
+
+			return true;
+		}
+	}
+	else
+	{
+		if(0==ReadProcessMemory(g_hProc,lpDebugString,&byDebugStringBuffer,dwSizeofDebugString,&dwRet))
+		{
+			return false;
+		}
+		else
+		{
+			strcpy_s(cDebugStringBuffer,(char*)byDebugStringBuffer);
+			DWORD dwNum = MultiByteToWideChar (CP_ACP, 0, cDebugStringBuffer, -1, NULL, 0);
+			wchar_t *pwText=new wchar_t[dwNum];
+			if(!pwText)
+			{
+				delete []pwText;
+			}
+			else
+			{
+				MultiByteToWideChar (CP_ACP, 0, cDebugStringBuffer, -1, pwText, dwNum);
+
+				CString csStr;
+				for(unsigned int i=0; i<wcslen(pwText); i++)  
+				{
+					csStr.AppendChar(pwText[i]);  
+				}
+
+				Printf2UI(csStr,MINIF_DEBUG_STRING);//调用接口
+
+				delete []pwText;
+			}
+
+			return true;
+		}
+	}
+
 
 }

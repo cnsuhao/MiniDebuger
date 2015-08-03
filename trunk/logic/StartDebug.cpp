@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include "Debug.h"
 #include "DealEvent.h"
+#include "..\Interface.h"
 
 _DEBUG_EVENT	DbgEvt	= {0};		
 DWORD	dwRet			= DBG_EXCEPTION_NOT_HANDLED;//未处理!!!!!!!!!!!dwRet有错误使用的代码似乎
@@ -10,7 +11,8 @@ extern HANDLE g_hProc;//被调试者的句柄
 
 int StartDebug(bool bNewProcess,void *Infor);
 bool GetEvent();
-
+//标记是否正在调试状态
+bool Debuging=false;
 
 
 
@@ -19,6 +21,12 @@ bool GetEvent();
 //void *Infor		:指向一个wchar_t字符串或者DWORD值,这取决于bNewProcess.
 int StartDebug(bool bNewProcess,void *Infor)
 {
+	//判断当前调试状态
+	if (true==Debuging)
+	{
+		return -1;
+	}
+
 	if (bNewProcess)
 	{
 		if(!CreateProcess((LPCWSTR)Infor,
@@ -48,6 +56,8 @@ int StartDebug(bool bNewProcess,void *Infor)
 		DebugActiveProcess(*((DWORD*)Infor));//传入DWORD值,而不是传入DWORD指针.
 	}
 
+	Debuging=true;
+
 	GetEvent();
 
 	return 1;
@@ -57,6 +67,9 @@ bool GetEvent()
 {
 	while(1==WaitForDebugEvent(&DbgEvt,INFINITE))
 	{
+		//检测是否存在需要调用的函数,它们由命令行提供
+		AutoAnalysisCommandParsing();
+
 		switch (DbgEvt.dwDebugEventCode)
 		{		
 			//异常调试
@@ -118,9 +131,37 @@ bool GetEvent()
 			dwRet);
 		//dwRet的值:
 		//DBG_CONTINUE:				异常已经处理
-		//DBG_EXCEPTION_NOT_HANDLED:异常需要系统继续处理
+		//DBG_EXCEPTION_NOT_HANDLED:异常需要系统继续处理(我们的默认)
 	}
-	return 1;
+	return false;
+}
+
+
+bool Detach()
+{
+	if (0!=DbgEvt.dwProcessId)
+	{
+		DebugActiveProcessStop(DbgEvt.dwProcessId);
+		Debuging=false;
+		return true;
+	}
+	
+	return false;
+	
+}
+
+
+//bLove==true   调试者崩溃,被调试者不会退出
+//bLove==false  相反.默认情况.
+//返回:false表示失败.
+bool LoveIt(bool bLove)
+{
+	if (0==DebugSetProcessKillOnExit(!bLove))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
