@@ -1,23 +1,25 @@
 #include <Windows.h>
 #include "Debug.h"
 #include <strsafe.h>
+#include "AntiAsm.h"
 
 #define BEA_ENGINE_STATIC
 #define BEA_USE_STDCALL
 #include "BeaEngine.h"
-#pragma comment(lib,"BeaEngine.lib")
+#pragma comment(lib,"logic/BeaEngine.lib")
+
 #pragma comment(linker,"/NODEFAULTLIB:\"crt.lib\"")
 
 
-
 extern HANDLE g_hProc;
+
 //////////////////////////////////////////////////////////////////////////
 //Return:-1:反汇编引擎反汇编错误.
 //
 //
 UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComment)
 {
-	//1. 将调试程序的内存复制到本地
+	//1. 将调试程序的内存复制到本地o
 	DWORD	dwRetSize		= 0;
 	LPVOID	lpRemote_Buf	= new BYTE[32];
 	ZeroMemory(lpRemote_Buf, 32);
@@ -56,14 +58,21 @@ UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComme
 
 }
 
-bool DisplayAntiASM(LPVOID lpIntAddress)
+
+/*
+//LPVOID lpAddress
+//
+//
+//
+*/
+bool DisplayAntiASM(LPVOID lpAddress,DWORD dwLen,)
 {
 
 
 	wchar_t szOPCode[64]	= {0};
 	wchar_t szASM[64]		= {0};
 	wchar_t szComment[64]	= {0};
-	DWORD	dwTempAddr		= (DWORD)lpIntAddress;//起始反汇编地址
+	DWORD	dwTempAddr		= (DWORD)lpAddress;//起始反汇编地址
 	DWORD   dwOPCodeLen		= 0;
 
 	for (;dwOPCodeLen!=-1;)

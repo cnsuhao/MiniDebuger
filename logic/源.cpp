@@ -1,3 +1,4 @@
+
 #include "StartDebug.h"
 #include <Windows.h>
 
@@ -21,15 +22,18 @@ int main(int argc,char* argv[])
 	{
 		delete []pwText;
 	}
-	MultiByteToWideChar (CP_ACP, 0, cPePath, -1, pwText, dwNum);
+	else
+	{
 
-	StartDebug(true,pwText);
+		MultiByteToWideChar (CP_ACP, 0, cPePath, -1, pwText, dwNum);
 
-	delete []pwText;
+		StartDebug(true,pwText);
+
+		delete []pwText;
+
+	}
 
 
-
-	
 
 	return 0;
 }
