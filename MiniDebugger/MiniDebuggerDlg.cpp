@@ -16,6 +16,10 @@
 #endif
 
 
+extern CString g_csCommandText;
+
+
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -23,13 +27,13 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
-// 实现
+	// 实现
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -83,6 +87,7 @@ BEGIN_MESSAGE_MAP(CMiniDebuggerDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -127,7 +132,11 @@ BOOL CMiniDebuggerDlg::OnInitDialog()
 	m_MainMsg.LineScroll(m_MainMsg.GetLineCount());//m_MainMsg为该编辑框的control变量
 
 	//启动调试线程
-	//HANDLE handle = CreateThread(NULL, 0, StartDebugThread, NULL, 0, NULL); 
+	HANDLE handle = CreateThread(NULL, 0, StartDebugThread, NULL, 0, NULL); 
+
+	SetTimer(TIMER_1,500,0);
+
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -225,7 +234,8 @@ BOOL CMiniDebuggerDlg::PreTranslateMessage(MSG* pMsg)
 	{       
 		if(GetFocus()== GetDlgItem(IDC_EDIT1))  //根据不同控件焦点判断是那个在执行  
 		{  
-			UpdateData(TRUE);
+			//UpdateData(TRUE);
+
 			//dosomething...  
 
 
@@ -267,4 +277,27 @@ bool CMiniDebuggerDlg::InterfaceOfDisplay(CString CommandText)
 	m_MainMsg.ReplaceSel(CommandText);
 
 	return true;
+}
+
+void CMiniDebuggerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	switch(nIDEvent)
+	{
+	case TIMER_1:
+		{ 
+
+			if(L""!=g_csCommandText)
+			{
+				InterfaceOfDisplay(g_csCommandText);
+
+				g_csCommandText	= L"";
+
+			}
+			break;
+		}
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

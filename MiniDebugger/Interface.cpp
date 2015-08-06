@@ -10,6 +10,8 @@
 
 #include "MiniDebuggerDlg.h"
 
+CString g_csCommandText=L"";
+
 CString csCallFunctionName = L"";
 CString csCallArgv	= L"";
 bool Breaking=false;
@@ -461,10 +463,7 @@ bool Printf2UI(CString stPrint,DWORD dwCode)
 	};
 
 
-	CMiniDebuggerDlg CMIF;
-	
-
-	CMIF.InterfaceOfDisplay(stPrint);
+	g_csCommandText = stPrint;
 
 	return true;
 }
