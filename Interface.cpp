@@ -4,6 +4,9 @@
 #include "Interface.h"
 #include "logic/DealEvent.h"
 #include "logic/StartDebug.h"
+#include "logic/ThreadRelated.h"
+
+
 
 CString csCallFunctionName = "";
 CString csCallArgv	= "";
@@ -250,7 +253,7 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				ListRegister();
 
 
 			}
@@ -262,11 +265,11 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				//这是一条无效的指令,直到你操作硬件断点寄存器
 
 
 			}
-			else if(L"p"==csCallFunctionName)
+			else if(L"p"==csCallFunctionName)//单步
 			{
 
 				if(""!=csCallArgv)
@@ -274,7 +277,7 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				SetExecStepFlag();
 
 
 			}
@@ -289,7 +292,7 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				//无效,直到你打算实现这个函数
 
 
 			}
@@ -302,7 +305,10 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
+				DWORD dwTempCT=0;
+				dwTempCT=_wtoi(csCallArgv.GetBuffer(csCallArgv.GetLength()));
 
+				WriteInt3((LPVOID)dwTempCT);//天知道强制转换会发生什么
 
 
 			}
@@ -314,7 +320,9 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				DWORD dwTempCT=0;
+				dwTempCT=_wtoi(csCallArgv.GetBuffer(csCallArgv.GetLength()));
+				ValidInt3(dwTempCT);
 
 
 			}
@@ -326,7 +334,9 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				DWORD dwTempCT=0;
+				dwTempCT=_wtoi(csCallArgv.GetBuffer(csCallArgv.GetLength()));
+				InvalidInt3(dwTempCT);
 
 
 			}
@@ -338,7 +348,9 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				DWORD dwTempCT=0;
+				dwTempCT=_wtoi(csCallArgv.GetBuffer(csCallArgv.GetLength()));
+				DeleteInt3(dwTempCT);
 
 
 			}
@@ -350,7 +362,8 @@ void AutoAnalysisCommandParsing()
 					BECP();
 					return;
 				}
-
+				
+				ListInt3();
 
 
 			}

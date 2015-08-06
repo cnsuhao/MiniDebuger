@@ -7,6 +7,7 @@ bool Deal_ODSE();//调试信息输出
 
 bool ListInt3();
 bool InvalidInt3(DWORD dwIndex);//使int3断点失效
+bool ValidInt3(DWORD dwIndex);//使有效
 bool DeleteInt3(DWORD dwIndex);
 bool WriteInt3(LPVOID  lpAddress);
 
