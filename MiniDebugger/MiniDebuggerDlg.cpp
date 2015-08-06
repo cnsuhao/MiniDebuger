@@ -126,7 +126,7 @@ BOOL CMiniDebuggerDlg::OnInitDialog()
 
 	// TODO: 在此添加额外的初始化代码
 
-	m_MainEdit.SetString(L"欢迎使用MiniDebugger!\r\n它的代码地址:http://code.taobao.org/p/MiniDebuger/src/ \r\n");
+	m_MainEdit.SetString(L"欢迎使用MiniDebugger!\r\n它的代码地址:http://code.taobao.org/p/MiniDebuger/src/ \r\n\r\n\r\n");
 
 	this->SetDlgItemTextW(IDC_EDIT1,m_MainEdit);//将m_MainEdit内容显示到ID为IDC_EDIT1的编辑框
 	m_MainMsg.LineScroll(m_MainMsg.GetLineCount());//m_MainMsg为该编辑框的control变量
@@ -134,7 +134,7 @@ BOOL CMiniDebuggerDlg::OnInitDialog()
 	//启动调试线程
 	HANDLE handle = CreateThread(NULL, 0, StartDebugThread, NULL, 0, NULL); 
 
-	SetTimer(TIMER_1,500,0);
+	SetTimer(TIMER_1,50,0);
 
 
 
@@ -247,15 +247,13 @@ BOOL CMiniDebuggerDlg::PreTranslateMessage(MSG* pMsg)
 
 			CString CommandText = m_CommandText;
 
-
-			//call 命令解析
-			//bool CommandParsing(CString CommandText);
+			CommandText.MakeLower();//改为小写
 			CommandParsing(CommandText);
 
 			m_CommandText="";
 			UpdateData(false);
 
-			CommandText =CommandText+L"\r\n";
+			CommandText =L">"+CommandText+L"\r\n";
 			int  nLength  =  m_MainMsg.SendMessage(WM_GETTEXTLENGTH);
 			m_MainMsg.SetSel(nLength, nLength);
 			m_MainMsg.ReplaceSel(CommandText);

@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0595 */
-/* at Thu Aug 06 16:55:25 2015
+/* at Thu Aug 06 19:11:04 2015
  */
 /* Compiler settings for MiniDebugger.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0595 
