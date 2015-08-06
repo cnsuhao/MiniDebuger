@@ -42,13 +42,28 @@ bool Deal_CPEV()
 	return true;
 }
 
-//使用Int3断点无效
+//使Int3断点无效
 bool InvalidInt3(DWORD dwIndex)
 {
 	if ((dwIndex<Int3Addr.size())&&(!Int3Addr.empty()))
 	{
 		Int3Value[dwIndex]=0;
 		if(false==ClearInt3(dwIndex))
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+//使Int3断点有效
+bool ValidInt3(DWORD dwIndex)
+{
+	if ((dwIndex<Int3Addr.size())&&(!Int3Addr.empty()))
+	{
+		Int3Value[dwIndex]=1;
+		if(false==WriteInt3(Int3Addr[dwIndex]))
 		{
 			return false;
 		}
