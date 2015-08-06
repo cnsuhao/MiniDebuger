@@ -10,7 +10,7 @@ enum Printf2UICode{
 	MINIF_MODULE,
 	MINIF_INT3,
 	MINIF_HARDWARE_BREAKPOINT,
-	MINIF_SOFTWARE_BREAKPOINT,
+	MINIF_MEMORY_BREAKPOINT,
 	MINIF_ERROR,
 	MINIF_WARMING,
 	MINIF_TIPS,
@@ -20,6 +20,7 @@ enum Printf2UICode{
 
 
 
+void BECP();//命令解析发生错误,置位.清理函数和参数etc.
 void CommandParsing(CString CommandText);
 void AutoAnalysisCommandParsing();
 bool Printf2UI(CString stPrint,DWORD dwCode);
