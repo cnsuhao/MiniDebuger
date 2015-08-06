@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Windows.h>
 
 //bool bNewProcess	:以调试的方式启动一个进程(1),附加到一个进程(0)
 //void *Infor		:指向一个字符串或者DWORD值,这取决于bNewProcess.
@@ -15,3 +15,16 @@ bool Detach();
 //返回:
 //false失败
 bool LoveIt(bool bLove);
+
+struct ThreadInformation
+{
+	DWORD ThreadID;
+	DWORD OwnerPID;
+	LONG  ThreadPLevel;
+
+};
+
+bool BreakNow();
+void KillDebuggedProcess();
+bool ListThreads();
+bool ChangeThread(DWORD dwIndex);

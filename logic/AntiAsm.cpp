@@ -1,7 +1,12 @@
+#include <afx.h>
+
 #include <Windows.h>
 #include "Debug.h"
 #include <strsafe.h>
 #include "AntiAsm.h"
+
+#include "../Interface.h"
+
 
 #define BEA_ENGINE_STATIC
 #define BEA_USE_STDCALL
@@ -60,26 +65,38 @@ UINT DBG_Disasm(LPVOID lpAddress, PWCHAR pOPCode,__out PWCHAR pASM,PWCHAR pComme
 
 
 /*
-//LPVOID lpAddress
-//
-//
+//LPVOID lpAddress:	起始的反汇编地址
+//DWORD  dwLine	  :	需要反汇编多少行	
+//DWORD	 dwMode(暂时无效)	  :	默认为0,表示从反汇编地址起始地址处开始反汇编,
+//					其它数字表示从反汇编起始地址向低地址偏移N的地址开始反汇编.
 //
 */
-bool DisplayAntiASM(LPVOID lpAddress,DWORD dwLen,)
+bool DisplayAntiASM(LPVOID lpAddress,DWORD dwLine,DWORD dwMode)
 {
 
 
-	wchar_t szOPCode[64]	= {0};
-	wchar_t szASM[64]		= {0};
-	wchar_t szComment[64]	= {0};
+	wchar_t swOPCode[64]	= {0};
+	wchar_t swASM[64]		= {0};
+	wchar_t swComment[64]	= {0};
+	wchar_t swPrintBuffer[200]={0};
 	DWORD	dwTempAddr		= (DWORD)lpAddress;//起始反汇编地址
 	DWORD   dwOPCodeLen		= 0;
 
-	for (;dwOPCodeLen!=-1;)
+
+	for (DWORD i=0;dwOPCodeLen!=-1&&i<dwLine;i++)
 	{
-		dwOPCodeLen = DBG_Disasm((LPVOID)dwTempAddr,szOPCode,szASM,szComment);
+		dwOPCodeLen = DBG_Disasm((LPVOID)dwTempAddr,swOPCode,swASM,swComment);
 		dwTempAddr+=dwOPCodeLen;
-		OutputDebug(L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,szOPCode,szASM,szComment);
+		OutputDebug(L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,swOPCode,swASM,swComment);
+		wsprintfW(swPrintBuffer,L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,swOPCode,swASM,swComment);
+		
+		CString csStr;
+		for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+		{
+			csStr.AppendChar(swPrintBuffer[i]);  
+		}
+		Printf2UI(csStr,MINIF_ANTIASM);
 	}
+
 	return true;
 }

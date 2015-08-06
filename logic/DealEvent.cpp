@@ -1,17 +1,17 @@
-
+#include <afx.h>
 #include <Windows.h>
 #include "Debug.h"
 #include "AntiAsm.h"
 #include "DealEvent.h"
 #include <vector>
 #include "..//Interface.h"
-#include <afx.h>
+#include "ThreadRelated.h"
 
 using std::vector;
 
 extern _DEBUG_EVENT	DbgEvt;	
 HANDLE g_hProc;//被调试者的句柄
-
+extern bool Breaking;
 
 //////////////////////////////////////////////////////////////////////////
 //一组用于保存int3状态的向量
@@ -360,11 +360,13 @@ bool WriteInt3(LPVOID	lpAddress)
 
 DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 {
+	Breaking=true;//启动中断标志
+
 	EXCEPTION_RECORD* pstcExp = &pDbgInfo->ExceptionRecord;
 
 	DWORD	dwExpCode	= pstcExp->ExceptionCode;	//异常代码
 	PVOID	lpExpAddr	= pstcExp->ExceptionAddress;//异常地址
-
+	
 	switch (dwExpCode)
 	{
 		//非法访问异常
@@ -375,7 +377,45 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 		//断点异常
 	case EXCEPTION_BREAKPOINT:
 		{
-			OutputDebug(L"Addr:0x%p",lpExpAddr);
+			OutputDebug(L"Int3 Break:Addr:0x%p",lpExpAddr);
+			//显示中断信息
+			//寄存器信息
+			//反汇编信息
+			CString stPrint=L"发生了Int3,使用g命令继续\n";
+			Printf2UI(stPrint,MINIF_INT3);
+			
+			ListRegister();
+
+			DisplayAntiASM(lpExpAddr,10);
+
+
+			//判断该断点是否在预定断点列表,
+			//如果是,则在Breaking=false的时候,需要使这个断点无效.
+			//关闭断点Breaking=false;
+			//然后返回DBG_CONTINUE
+			//如果不是则等待Breaking=false然后break;
+
+			//首先等待
+			while (true)
+			{
+				Sleep(500);
+				if (false==Breaking)
+				{
+					break;
+				}
+			}
+
+			int iTempIndex=SerarchInt3(lpExpAddr);
+			if (-1!=iTempIndex)
+			{
+				InvalidInt3(iTempIndex);
+				return DBG_CONTINUE;
+			}
+			else
+			{
+				break;
+			}
+
 			break;
 		}
 		//内存对齐异常
@@ -401,19 +441,46 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 		//单步或硬件断点异常
 	case EXCEPTION_SINGLE_STEP:
 		{
+			OutputDebug(L"Int3 Break:Addr:0x%p",lpExpAddr);
+			//显示中断信息
+			//寄存器信息
+			//反汇编信息
+			CString stPrint=L"发生了Int3,使用g命令继续\n";
+			Printf2UI(stPrint,MINIF_STEP_BY_STEP);
+
+			ListRegister();
+
+			DisplayAntiASM(lpExpAddr,10);
+
+			while (true)
+			{
+				Sleep(500);
+				if (false==Breaking)
+				{
+					break;
+				}
+			}
+
+			return DBG_CONTINUE;
+
+
+
 			break;
 		}
 
 	default:
 		break;
 	}
+
+	Breaking = false;//!!!警告本函数中每一个return 需要包含此语句.来关闭中断标志.
+
 	return DBG_EXCEPTION_NOT_HANDLED;////DBG_CONTINUE//异常已经处理
 
 }
 
 
 //调试字符串输出处理程序
-bool ;Deal_ODSE()
+bool Deal_ODSE()
 {
 	LPVOID lpDebugString = NULL;
 	DWORD dwSizeofDebugString=0;
@@ -496,6 +563,48 @@ bool ;Deal_ODSE()
 			return true;
 		}
 	}
+
+
+}
+
+//被调试者退出
+bool Deal_EPDE()
+{
+	OutputDebug(L"被调试者退出");
+
+	CString stPrint=L"被调试者退出";
+	Printf2UI(stPrint,MINIF_TIPS);
+
+	return true;
+}
+
+//列出所有记录的Int3记录.
+bool ListInt3()
+{
+	CString csTempA;
+	bool bA=false;
+	for (DWORD i=0;i<Int3Addr.size();++i)
+	{	
+		bA=true;
+		
+		csTempA.Format(L"%u",(DWORD)Int3Addr[i]);
+		if(false==Printf2UI(csTempA,MINIF_INT3))
+		{
+			return false;
+		}
+	}
+
+	//列表为空
+	if (false==bA)
+	{
+		csTempA = L"警告:当前没有任何断点被记录.";
+		if(false==Printf2UI(csTempA,MINIF_WARMING))
+		{
+			return false;
+		}
+	}
+
+	return true;
 
 
 }
