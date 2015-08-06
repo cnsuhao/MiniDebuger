@@ -64,7 +64,7 @@ bool ListRegister()
 
 	wchar_t swPrintBuffer[1024]={0};
 	wsprintfW(swPrintBuffer,
-		L"EAX=%p EBX=%p ECX=%p EDX=%p \nESI=%p EDI=%p ESP=%p EBP=%p EIP=%p \nEFLAGS=%p \nCF=%d,PF=%d,AF=%d,ZF=%d,SF=%d,TF=%d,IF=%d,DF=%d,OF=%d",
+		L"EAX=%p EBX=%p ECX=%p EDX=%p \r\nESI=%p EDI=%p ESP=%p EBP=%p EIP=%p \r\nEFLAGS=%p \r\nCF=%d,PF=%d,AF=%d,ZF=%d,SF=%d,TF=%d,IF=%d,DF=%d,OF=%d",
 		stcCxt.Eax,stcCxt.Ebx,stcCxt.Ecx,stcCxt.Edx,
 		stcCxt.Esi,stcCxt.Edi,stcCxt.Esp,stcCxt.Ebp,stcCxt.Eip,stcCxt.EFlags,pEftempA->CF,pEftempA->PF,pEftempA->AF,pEftempA->ZF,pEftempA->SF,pEftempA->TF,pEftempA->IF,pEftempA->DF,pEftempA->OF);
 

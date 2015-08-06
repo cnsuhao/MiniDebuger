@@ -420,6 +420,7 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 				{
 					break;
 				}
+				AutoAnalysisCommandParsing();
 			}
 
 			int iTempIndex=SerarchInt3(lpExpAddr);
