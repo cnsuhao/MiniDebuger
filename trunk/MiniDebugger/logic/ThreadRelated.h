@@ -1,5 +1,5 @@
 #pragma once
-
+#include <afx.h>
 
 
 //ÁÐ³ö¼Ä´æÆ÷

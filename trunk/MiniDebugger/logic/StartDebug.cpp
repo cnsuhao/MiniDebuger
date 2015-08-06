@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include <afx.h>
+
 #include <Windows.h>
 #include "Debug.h"
 #include "DealEvent.h"

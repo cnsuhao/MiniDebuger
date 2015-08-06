@@ -1,5 +1,5 @@
 #pragma once
-
+#include <afx.h>
 
 bool Deal_CPEV();//进程创建事件
 bool Deal_EPDE();//被调试这退出

@@ -1,4 +1,6 @@
 ///////debug.cpp
+#include "stdafx.h"
+#include <afx.h>
 
 #include "Debug.h"
 #include <tchar.h>
