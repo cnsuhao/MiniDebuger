@@ -51,4 +51,5 @@ public:
 
 	bool InterfaceOfDisplay(CString CommandText);
 
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
