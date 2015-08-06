@@ -39,7 +39,7 @@ bool Deal_CPEV()
 	}
 
 	//在OEP放一个软件断点.
-	WriteInt3(lpIntAddress);
+	//WriteInt3(lpIntAddress);
 
 	return true;
 }
@@ -426,7 +426,11 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 			int iTempIndex=SerarchInt3(lpExpAddr);
 			if (-1!=iTempIndex)
 			{
-				InvalidInt3(iTempIndex);
+				if(false==InvalidInt3(iTempIndex))
+				{
+					break;
+				}
+				Breaking = false;
 				return DBG_CONTINUE;
 			}
 			else

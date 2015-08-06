@@ -43,8 +43,10 @@ void CommandParsing(CString CommandText)
 		m_argv=CommandText.Mid(iBlackIndex+1);
 	}
 
+	csCallFunctionName=m_functionName;
+	csCallArgv=m_argv;
 
-	//是否在调试状态
+
 
 	if (L"attach"==csCallFunctionName)
 	{
@@ -110,6 +112,16 @@ void CommandParsing(CString CommandText)
 			LoveIt(true);//这会导致什么你懂得
 
 
+		}
+		else if(L"exit"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+			ExitProcess(-1);
 		}
 		BECP();
 		return;
@@ -369,6 +381,17 @@ void AutoAnalysisCommandParsing()
 
 
 		}
+		else if(L"g"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+
+			Breaking = false;
+		}
 
 		BECP();
 		return;
@@ -464,6 +487,8 @@ bool Printf2UI(CString stPrint,DWORD dwCode)
 
 
 	g_csCommandText = stPrint;
+
+	Sleep(100);
 
 	return true;
 }

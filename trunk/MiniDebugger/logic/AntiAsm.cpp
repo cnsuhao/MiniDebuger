@@ -89,7 +89,7 @@ bool DisplayAntiASM(LPVOID lpAddress,DWORD dwLine,DWORD dwMode)
 		dwOPCodeLen = DBG_Disasm((LPVOID)dwTempAddr,swOPCode,swASM,swComment);
 		dwTempAddr+=dwOPCodeLen;
 		OutputDebug(L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,swOPCode,swASM,swComment);
-		wsprintfW(swPrintBuffer,L"Addr:0x%p %-12s %-16s %s\n",dwTempAddr,swOPCode,swASM,swComment);
+		wsprintfW(swPrintBuffer,L"Addr:0x%p %-12s %-16s %s",dwTempAddr,swOPCode,swASM,swComment);
 		
 		CString csStr;
 		for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
