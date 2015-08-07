@@ -14,6 +14,8 @@ using std::vector;
 extern _DEBUG_EVENT	DbgEvt;	
 HANDLE g_hProc;//被调试者的句柄
 extern bool Breaking;
+extern DWORD dwNowThread;
+
 
 //////////////////////////////////////////////////////////////////////////
 //一组用于保存int3状态的向量
@@ -731,3 +733,104 @@ bool ListInt3()
 
 
 }
+
+
+
+//栈回溯递归搜寻
+void kRecur(DWORD* dwEbp)
+{
+	if(nullptr==dwEbp)
+	{return;}
+
+	DWORD dwNewEbp=0;
+
+	if(	false==ReadDebuggedMemory((PVOID)dwEbp,4,_Out_ (BYTE*)(&dwNewEbp)))
+	{
+		return ;
+	}
+
+	DWORD dwFunReturnPath=0;
+
+	if (false==ReadDebuggedMemory((PVOID)(dwEbp+1),4,_Out_ (BYTE*)(&dwFunReturnPath)))
+	{
+
+		return;
+	}
+	//printf("函数返回地址:%p\r\n",(DWORD)dwFunReturnPath);
+
+
+	wchar_t swPrintBuffer[200]={0};
+
+	OutputDebug(L"返回地址:		0x%p\r\n",
+		dwFunReturnPath);
+
+	wsprintfW(swPrintBuffer,L"返回地址:		0x%p",
+		dwFunReturnPath);
+	CString csStr;
+
+	for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+	{
+		csStr.AppendChar(swPrintBuffer[i]);  
+	}
+
+	Printf2UI(csStr,MINIF_STACK_TRACE);
+
+
+
+	if (0!=(DWORD)dwNewEbp)
+	{
+		kRecur((DWORD*)dwNewEbp);
+	}
+
+
+	return ;
+
+}
+
+
+/*
+//用途:
+通用读被调试者内存函数.读失败不做改变权限尝试.
+//参数
+LPVOID	lpAddress	//起始读地址
+DWORD	dwGetNumber	//希望获得的内存内容字节数量.
+_Out_	BYTE* wcGetValue	//用于存放内容的地方.例如:BYTE byA[20]中的byA;
+*/
+
+bool ReadDebuggedMemory(LPVOID lpAddress,DWORD dwGetNumber,_Out_ BYTE* wcGetValue)
+{
+
+	DWORD	dwRetN		= 0;
+
+	if(!ReadProcessMemory(g_hProc,lpAddress,wcGetValue,dwGetNumber,&dwRetN))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool kStackTrace()
+{
+	//获取进程上下文
+	CONTEXT stcCxt = {CONTEXT_FULL|CONTEXT_DEBUG_REGISTERS};
+	HANDLE hTargetThread;
+
+	hTargetThread= OpenThread(THREAD_ALL_ACCESS , FALSE, dwNowThread);        //线程句柄
+
+	if (NULL==hTargetThread)
+	{
+		return false;
+	}
+
+
+	if (NULL==GetThreadContext(hTargetThread, &stcCxt))
+	{
+		return false;
+	}
+
+	
+	kRecur((DWORD*)stcCxt.Ebp);
+
+	return true;
+};
+

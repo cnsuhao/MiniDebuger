@@ -15,8 +15,9 @@ bool ValidInt3(DWORD dwIndex);//使有效
 bool DeleteInt3(DWORD dwIndex);
 bool WriteInt3(LPVOID  lpAddress);
 
-
-
+bool ReadDebuggedMemory(LPVOID lpAddress,DWORD dwGetNumber,_Out_ BYTE* wcGetValue);//通用的读内存的函数
+bool kStackTrace();//栈回溯
+void kRecur(DWORD* dwEbp);//栈回溯递归搜寻
 
 bool ClearInt3(DWORD dwIndex);//!!外部勿使用,它没有清理Vector中的东东.会导致不可预料的结果.
 int SerarchInt3(LPVOID lpAddress);
