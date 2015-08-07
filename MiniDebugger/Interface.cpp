@@ -123,6 +123,16 @@ void CommandParsing(CString CommandText)
 			}
 			ExitProcess(-1);
 		}
+		else if(L"detach"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+			Detach();
+		}
 		BECP();
 		return;
 
@@ -391,6 +401,51 @@ void AutoAnalysisCommandParsing()
 			}
 
 			Breaking = false;
+		}
+		else if(L"kill"==csCallFunctionName)//此函数所调用ntsd调试杀死方式可能有问题
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+			KillDebuggedProcess();
+
+
+		}
+		else if(L"loveit"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+
+			LoveIt(true);//这会导致什么你懂得
+
+
+		}
+		else if(L"exit"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+			ExitProcess(-1);
+		}
+		else if(L"detach"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+			Detach();
 		}
 
 		BECP();

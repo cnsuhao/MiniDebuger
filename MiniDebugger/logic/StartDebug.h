@@ -28,5 +28,7 @@ struct ThreadInformation
 
 bool BreakNow();
 void KillDebuggedProcess();
+
+bool GetDebuggedThreadList();//初始化线程列表,将线程ID存储到一个地方.
 bool ListThreads();
 bool ChangeThread(DWORD dwIndex);

@@ -481,6 +481,7 @@ DWORD OnExceptionDebugEvent(LPEXCEPTION_DEBUG_INFO pDbgInfo)
 				{
 					break;
 				}
+				AutoAnalysisCommandParsing();
 			}
 
 			return DBG_CONTINUE;
@@ -599,6 +600,106 @@ bool Deal_EPDE()
 
 	return true;
 }
+
+//线程创建
+bool Deal_CTDE()
+{
+	wchar_t swPrintBuffer[200]={0};
+
+	OutputDebug(L"线程创建: 基址:0x%p OEP:0x%p 句柄:0x%p",
+		DbgEvt.u.CreateThread.lpThreadLocalBase,DbgEvt.u.CreateThread.lpStartAddress,DbgEvt.u.CreateThread.hThread);
+
+
+	wsprintfW(swPrintBuffer,L"线程创建: 基址:0x%p OEP:0x%p 句柄:0x%p",
+		DbgEvt.u.CreateThread.lpThreadLocalBase,DbgEvt.u.CreateThread.lpStartAddress,DbgEvt.u.CreateThread.hThread);
+
+	CString csStr;
+
+	for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+	{
+		csStr.AppendChar(swPrintBuffer[i]);  
+	}
+
+	Printf2UI(csStr,MINIF_TIPS);
+
+	return true;
+
+}
+
+//线程退出
+bool Deal_ETDE()
+{
+	wchar_t swPrintBuffer[200]={0};
+
+	OutputDebug(L"线程退出:		线程ID:0x%p		退出码:0x%p",
+		DbgEvt.dwThreadId,DbgEvt.u.ExitThread.dwExitCode);
+
+	wsprintfW(swPrintBuffer,L"线程退出:		线程ID:0x%p		退出码:0x%p",
+		DbgEvt.dwThreadId,DbgEvt.u.ExitThread.dwExitCode);
+	CString csStr;
+
+	for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+	{
+		csStr.AppendChar(swPrintBuffer[i]);  
+	}
+
+	Printf2UI(csStr,MINIF_TIPS);
+
+	return true;
+
+}
+
+
+//模块加载
+bool Deal_LDDE()
+{
+	wchar_t swPrintBuffer[MAX_PATH+64]={0};
+
+	OutputDebug(L"模块加载:		基址:Ox%p	%s",
+		DbgEvt.u.LoadDll.lpBaseOfDll,DbgEvt.u.LoadDll.lpImageName);//这里没有判断是否是Unicode类型.fUnicode标记.
+
+	wsprintfW(swPrintBuffer,L"模块加载:		基址:Ox%p	%s",
+		DbgEvt.u.LoadDll.lpBaseOfDll,(wchar_t*)DbgEvt.u.LoadDll.lpImageName);
+
+	CString csStr;
+
+	for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+	{
+		csStr.AppendChar(swPrintBuffer[i]);  
+	}
+
+
+	Printf2UI(csStr,MINIF_MODULE);
+
+	return true;
+}
+
+//模块卸载
+bool Deal_UDDE()
+{
+	wchar_t swPrintBuffer[MAX_PATH+64]={0};
+
+	OutputDebug(L"模块卸载:		基址:Ox%p",
+		DbgEvt.u.UnloadDll.lpBaseOfDll);//这里没有判断是否是Unicode类型.fUnicode标记.
+
+	wsprintfW(swPrintBuffer,L"模块加载:		基址:Ox%p",
+		DbgEvt.u.UnloadDll.lpBaseOfDll);
+	
+	CString csStr;
+
+	for(DWORD i=0; i<wcslen(swPrintBuffer); i++)  
+	{
+		csStr.AppendChar(swPrintBuffer[i]);  
+	}
+
+
+	Printf2UI(csStr,MINIF_MODULE);
+
+	return true;
+}
+
+
+
 
 //列出所有记录的Int3记录.
 bool ListInt3()

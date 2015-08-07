@@ -22,7 +22,7 @@ vector<ThreadInformation> vTI;//被调试者的线程信息
 int StartDebug(bool bNewProcess,void *Infor);
 bool GetEvent();
 //标记是否正在调试状态
-bool Debugging=false;
+bool Debugging = false;
 extern DWORD dwNowThread;
 
 
@@ -32,7 +32,7 @@ extern DWORD dwNowThread;
 int StartDebug(bool bNewProcess,void *Infor)
 {
 	//判断当前调试状态
-	if (true==Debugging)
+	if (true == Debugging)
 	{
 		return -1;
 	}
@@ -108,21 +108,25 @@ bool GetEvent()
 			//线程创建
 		case CREATE_THREAD_DEBUG_EVENT:
 			{
+				Deal_CTDE();
 				break;
 			}
 			//线程退出
 		case EXIT_THREAD_DEBUG_EVENT:
 			{
+				Deal_ETDE();
 				break;
 			}
 			//映射DLL
 		case LOAD_DLL_DEBUG_EVENT:
 			{
+				Deal_LDDE();
 				break;
 			}
 			//卸载DLL
 		case UNLOAD_DLL_DEBUG_EVENT:
 			{
+				Deal_UDDE();
 				break;
 			}
 			//调试字符串输出
@@ -153,7 +157,7 @@ bool GetEvent()
 	return false;
 }
 
-
+//必须在建立调试对话的线程中调用.
 bool Detach()
 {
 	if (0!=DbgEvt.dwProcessId)
