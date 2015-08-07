@@ -402,6 +402,20 @@ void AutoAnalysisCommandParsing()
 
 			Breaking = false;
 		}
+		
+		else if(L"k"==csCallFunctionName)
+		{
+
+			if(""!=csCallArgv)
+			{
+				BECP();
+				return;
+			}
+
+			kStackTrace();
+		}
+
+
 		else if(L"kill"==csCallFunctionName)//此函数所调用ntsd调试杀死方式可能有问题
 		{
 
@@ -534,7 +548,10 @@ bool Printf2UI(CString stPrint,DWORD dwCode)
 			stPrint=L"单步:"+stPrint+L"\r\n";
 			break;
 		}
-
+	case MINIF_STACK_TRACE:
+		{
+			stPrint=L"\t"+stPrint+L"\r\n";
+		}
 
 	default:
 		break;
