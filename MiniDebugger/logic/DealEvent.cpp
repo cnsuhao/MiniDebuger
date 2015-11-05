@@ -657,11 +657,16 @@ bool Deal_LDDE()
 {
 	wchar_t swPrintBuffer[MAX_PATH+64]={0};
 
-	OutputDebug(L"模块加载:		基址:Ox%p	%s",
-		DbgEvt.u.LoadDll.lpBaseOfDll,DbgEvt.u.LoadDll.lpImageName);//这里没有判断是否是Unicode类型.fUnicode标记.
+	wchar_t wcImageName[64]={0};
+
+	ReadDebuggedMemory(DbgEvt.u.LoadDll.lpImageName,32,(BYTE*)wcImageName);
+	//一般情况下fUnicode标记为1.表示字符串用UNICODE编码
+	OutputDebug(L"模块加载:		基址:Ox%p	%s\r\n",
+		DbgEvt.u.LoadDll.lpBaseOfDll,wcImageName+4);//为什么+4,因为前面有几个字节的废物.God know why.2015年11月5日 21:37:57
+
 
 	wsprintfW(swPrintBuffer,L"模块加载:		基址:Ox%p	%s",
-		DbgEvt.u.LoadDll.lpBaseOfDll,(wchar_t*)DbgEvt.u.LoadDll.lpImageName);
+		DbgEvt.u.LoadDll.lpBaseOfDll,wcImageName+4);
 
 	CString csStr;
 
